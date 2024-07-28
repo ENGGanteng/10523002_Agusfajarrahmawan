@@ -1,0 +1,166 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define MAX_BARANG 100
+
+typedef struct {
+    int id;
+    char nama_barang[50];
+    float berat;
+    struct tm waktu_awal;
+    struct tm waktu_akhir;
+    int biaya;
+} Barang;
+
+Barang penitipan[MAX_BARANG];
+int jumlah_barang = 0;
+
+void tambah_barang() {
+    int id;
+    char nama_barang[50];
+    float berat;
+    struct tm waktu_awal, waktu_akhir;
+    int biaya, lama_penitipan;
+
+    printf("Masukkan ID Penitip: ");
+    scanf("%d", &id);
+    printf("Masukkan Nama Barang: ");
+    scanf("%s", nama_barang);
+    printf("Masukkan Berat Barang (Kg): ");
+    scanf("%f", &berat);
+
+    printf("Masukkan Waktu Awal Penitipan (HH MM SS): ");
+    scanf("%d %d %d", &waktu_awal.tm_hour, &waktu_awal.tm_min, &waktu_awal.tm_sec);
+    printf("Masukkan Waktu Akhir Penitipan (HH MM SS): ");
+    scanf("%d %d %d", &waktu_akhir.tm_hour, &waktu_akhir.tm_min, &waktu_akhir.tm_sec);
+
+    lama_penitipan = waktu_akhir.tm_hour - waktu_awal.tm_hour;
+    if (waktu_akhir.tm_min > waktu_awal.tm_min || (waktu_akhir.tm_min == waktu_awal.tm_min && waktu_akhir.tm_sec > waktu_awal.tm_sec)) {
+        lama_penitipan += 1;
+    }
+
+    if (berat <= 3.0) {
+        biaya = 2500;
+    } else if (berat <= 5.0) {
+        biaya = 5000;
+    } else {
+        biaya = 10000;
+    }
+
+    biaya *= lama_penitipan;
+
+    Barang barang = { id, "", berat, waktu_awal, waktu_akhir, biaya };
+    strcpy(barang.nama_barang, nama_barang);
+    penitipan[jumlah_barang++] = barang;
+
+    printf("Barang berhasil ditambahkan!\n");
+}
+
+void tampilkan_barang() {
+    for (int i = 0; i < jumlah_barang; i++) {
+        printf("ID: %d, Nama Barang: %s, Berat: %.2f Kg, Biaya: Rp %d\n",
+               penitipan[i].id, penitipan[i].nama_barang, penitipan[i].berat, penitipan[i].biaya);
+    }
+}
+
+void cari_barang() {
+    int id;
+    printf("Masukkan ID Penitip yang ingin dicari: ");
+    scanf("%d", &id);
+    for (int i = 0; i < jumlah_barang; i++) {
+        if (penitipan[i].id == id) {
+            printf("ID: %d, Nama Barang: %s, Berat: %.2f Kg, Biaya: Rp %d\n",
+                   penitipan[i].id, penitipan[i].nama_barang, penitipan[i].berat, penitipan[i].biaya);
+            return;
+        }
+    }
+    printf("Barang tidak ditemukan.\n");
+}
+
+void edit_barang() {
+    int id;
+    printf("Masukkan ID Penitip yang ingin diedit: ");
+    scanf("%d", &id);
+    for (int i = 0; i < jumlah_barang; i++) {
+        if (penitipan[i].id == id) {
+            printf("Masukkan Berat Barang Baru (Kg): ");
+            scanf("%f", &penitipan[i].berat);
+            printf("Berat barang berhasil diupdate.\n");
+            return;
+        }
+    }
+    printf("Barang tidak ditemukan.\n");
+}
+
+void ambil_barang() {
+    int id;
+    FILE *file = fopen("TITIP.DAT", "a");
+    if (!file) {
+        printf("Gagal membuka file.\n");
+        return;
+    }
+    printf("Masukkan ID Penitip yang ingin diambil: ");
+    scanf("%d", &id);
+    for (int i = 0; i < jumlah_barang; i++) {
+        if (penitipan[i].id == id) {
+            fprintf(file, "ID: %d, Nama Barang: %s, Berat: %.2f Kg, Biaya: Rp %d\n",
+                    penitipan[i].id, penitipan[i].nama_barang, penitipan[i].berat, penitipan[i].biaya);
+            for (int j = i; j < jumlah_barang - 1; j++) {
+                penitipan[j] = penitipan[j + 1];
+            }
+            jumlah_barang--;
+            printf("Barang berhasil diambil dan dicatat ke file.\n");
+            fclose(file);
+            return;
+        }
+    }
+    printf("Barang tidak ditemukan.\n");
+    fclose(file);
+}
+
+void tampilkan_histori() {
+    char line[256];
+    FILE *file = fopen("TITIP.DAT", "r");
+    if (!file) {
+        printf("Gagal membuka file.\n");
+        return;
+    }
+    while (fgets(line, sizeof(line), file)) {
+        printf("%s", line);
+    }
+    fclose(file);
+}
+
+void menu() {
+    int pilihan;
+    do {
+        printf("Menu:\n");
+        printf("1. Tambah Barang\n");
+        printf("2. Tampilkan Barang\n");
+        printf("3. Cari Barang\n");
+        printf("4. Edit Barang\n");
+        printf("5. Ambil Barang\n");
+        printf("6. Tampilkan Histori\n");
+        printf("7. Keluar\n");
+        printf("Pilihan: ");
+        scanf("%d", &pilihan);
+
+        switch (pilihan) {
+            case 1: tambah_barang(); break;
+            case 2: tampilkan_barang(); break;
+            case 3: cari_barang(); break;
+            case 4: edit_barang(); break;
+            case 5: ambil_barang(); break;
+            case 6: tampilkan_histori(); break;
+            case 7: printf("Keluar dari program.\n"); break;
+            default: printf("Pilihan tidak valid.\n");
+        }
+    } while (pilihan != 7);
+}
+
+int main() {
+    menu();
+    return 0;
+}

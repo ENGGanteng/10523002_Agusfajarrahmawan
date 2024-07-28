@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Mau Beli Yang Mana?</h2>
+
+<form action="">
+  <label for="fname">Nama:</label><br>
+  <input type="text" id="fname" name="fname" value=""><br>
+  <label for="lname">Alamat :</label><br>
+  <input type="text" id="alamat" name="lname" value=""><br>
+  <label for="nohp">No HP:</label><br>
+  <input type="text" id="nohp" name="nohp" value=""><br>
+  <label for="prod1">produk yang dibeli:</label><br>
+    <input type="radio" id="prod1" name="prod1" value="KAHF 1">
+    <label for="prod1">KAHF OIL AND ACNE CARE FACE WASh</label><br>
+    <input type="radio" id="prod1" name="prod1" value="KAHF 2">
+    <label for="prod1">KAHF SKIN ENEGIZING AND BRIGHTNING FACE WASH</label><br>
+    <input type="radio" id="prod1" name="prod1" value="KAHF 3">
+    <label for="prod1">KAHF TRIPLE ACTION OIL AND COMEDO DEFENSE FACE WASH</label><br>
+    <input type="radio" id="prod1" name="prod1" value="KAHF 4">
+    <label for="prod1">KAHF GENTLE EXFOLIOTING FACE SCRUB</label><br>
+  <label for="fname">jumlah:</label><br>
+    <input  type= "number" min= "1" max="1000" name="browser" id="jmlhbeli1">
+    <input type="submit" id="hitung">
+</form> 
+
+<script>
+    document.getElementById('hitung').addEventListener('click',function(){
+        var nama = document.getElementById('fname').value;
+        var produkbeli = document.getElementsByName('prod1');
+        var selectedprod = "";
+        for(var i = 0; i<produkbeli.length; i++){
+            if(produkbeli[i].checked){
+                var selectedprod = produkbeli[i].value;
+                break;
+            }
+
+        }
+        
+        var jmlhbeli = document.getElementById('jmlhbeli1').value;
+        var total = Number(jmlhbeli) * 35000;
+        var konfir = confirm("Hai " + nama + ", Apakah anda yakin untuk membeli " + selectedprod + " sebanyak "+ jmlhbeli +" dengan total harga Rp. "+ total);
+        if (konfir){
+            alert("Terima Kasih Sudah Berbelanja di SHOPE ENG");
+        
+        }else{
+            alert("Oke Tetap Disini Aja Ya");
+        }
+    });
+</script>
+
+
+</body>
+</html>
